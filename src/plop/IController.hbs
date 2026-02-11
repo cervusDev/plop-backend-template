@@ -1,7 +1,7 @@
 export interface IControllerRequest<
   TBody = unknown,
-  TParams = Record<string, string>,
-  TQuery = Record<string, string | string[]>,
+  TParams = Record<string, string> | unknown,
+  TQuery = Record<string, string | string[]> | unknown,
 > {
   adminId?: number;
   body: TBody;
