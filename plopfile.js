@@ -1,7 +1,8 @@
 import fs from "fs";
 import path from "path";
+import { execSync } from "child_process";
 
-const templatePath = "src/plop";
+const templatePath = "src/shared/plop";
 
 export default function (plop) {
   plop.setActionType("mkdir", (answers, config) => {
@@ -16,12 +17,25 @@ export default function (plop) {
     return `Diretório já existe: ${dirPath}`;
   });
 
+  plop.setActionType("exec", (answers, config) => {
+    try {
+      execSync(config.command, {
+        stdio: "inherit",
+        cwd: plop.getDestBasePath(),
+      });
+
+      return `Comando executado: ${config.command}`;
+    } catch (error) {
+      throw new Error(`Erro ao executar comando: ${config.command}`);
+    }
+  });
+
   plop.setHelper("lowerFirst", (text) => {
     if (!text) return "";
     return text.charAt(0).toLowerCase() + text.slice(1);
   });
 
-  plop.setGenerator("init-project", {
+  plop.setGenerator("init", {
     description: "criar um projeto completo.",
     prompts: [],
     actions: () => {
@@ -137,7 +151,7 @@ export default function (plop) {
         },
         {
           type: "add",
-          path: "src/infra/http/middlewares/FasitfyMiddleware.ts",
+          path: "src/infra/http/middlewares/FastifyMiddleware.ts",
           templateFile: `${templatePath}/FastifyMiddleware.hbs`,
           skipIfExists: true,
         },
@@ -183,8 +197,100 @@ export default function (plop) {
           templateFile: `${templatePath}/IUseCase.hbs`,
           skipIfExists: true,
         },
+        {
+          type: "add",
+          path: "tsconfig.json",
+          templateFile: `${templatePath}/TSConfig.hbs`,
+          skipIfExists: true,
+        },
+        {
+          type: "add",
+          path: ".eslintrc.json",
+          templateFile: `${templatePath}/ESLint.hbs`,
+          skipIfExists: true,
+        },
+        {
+          type: "add",
+          path: ".prettierrc",
+          templateFile: `${templatePath}/Prettier.hbs`,
+          skipIfExists: true,
+        },
+        {
+          type: "add",
+          path: "Dockerfile",
+          templateFile: `${templatePath}/Dockerfile.hbs`,
+          skipIfExists: true,
+        },
+        {
+          type: "add",
+          path: "docker-compose.yml",
+          templateFile: `${templatePath}/DockerCompose.hbs`,
+          skipIfExists: true,
+        },
+        {
+          type: "add",
+          path: "drizzle.config.ts",
+          templateFile: `${templatePath}/DrizzleConfig.hbs`,
+          skipIfExists: true,
+        },
+        {
+          type: "add",
+          path: ".editorconfig",
+          templateFile: `${templatePath}/EditorConfig.hbs`,
+          skipIfExists: true,
+        },
+        {
+          type: "add",
+          path: ".env.example",
+          templateFile: `${templatePath}/EnvExample.hbs`,
+          skipIfExists: true,
+        },
+        {
+          type: "exec",
+          command: "pnpm add -D typescript tsx @types/node",
+        },
+        {
+          type: "exec",
+          command: "pnpm add @fastify/cors",
+        },
+        {
+          type: "exec",
+          command: "pnpm add fastify-type-provider-zod",
+        },
+        {
+          type: "exec",
+          command: "pnpm add qs",
+        },
+        {
+          type: "exec",
+          command: "pnpm add -D @types/qs",
+        },
+        {
+          type: "exec",
+          command: "pnpm add @fastify/rate-limit",
+        },
+        {
+          type: "exec",
+          command: "pnpm add winston",
+        },
+        {
+          type: "exec",
+          command: "pnpm add drizzle-orm pg dotenv",
+        },
+        {
+          type: "exec",
+          command: "pnpm add -D drizzle-kit tsx @types/pg",
+        },
+        {
+          type: "exec",
+          command: "pnpm add zod zod-validation-error",
+        },
+        {
+          type: "exec",
+          command:
+            "pnpm add -D @typescript-eslint/eslint-plugin @typescript-eslint/parser eslint-config-prettier eslint-plugin-import prettier eslint",
+        },
       ];
-
       return actions;
     },
   });
